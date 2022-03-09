@@ -233,6 +233,10 @@
             background: #444;
 
         }
+
+        .geektg_only {
+            background: linear-gradient(45deg, #3d9519 0%, #337918 100%);
+        }
     </style>
 </head>
 <body>
@@ -260,7 +264,9 @@
             let file = mod['link'].split('/');
             file = file[file.length - 1];
             let random = (Math.random() * (-.4) + .7).toFixed(3);
-            document.querySelector('.mods span').innerHTML += '<div class="mod" id="m' + i.toString() + '" name="' + mod['name'] + '"><div class="flex"><img class="icon" src="' + mod['pic'] + '"<a class="title" href="view/' + file + '" target="_blank">' + mod['name'] + '</a></div></div>';
+            let class_ = mod['geektg_only'] ? "geektg_only" : ""
+            // console.log(class_);
+            document.querySelector('.mods span').innerHTML += '<div class="mod ' + class_ + '" id="m' + i.toString() + '" name="' + mod['name'] + '"><div class="flex"><img class="icon" src="' + mod['pic'] + '"<a class="title" href="view/' + file + '" target="_blank">' + mod['name'] + '</a></div></div>';
             $("#m" + i.toString()).hide();
         }
         setTimeout(() => {

@@ -344,6 +344,7 @@ def scan():
                         - sum(len(_) for _ in re.findall(r'(""".*?""")|(#.*)', code)),
                         "file": mod.path.split("/")[-1],
                         "commands": commands,
+                        "geektg_only": "#scope:geektg_only" in code.replace(" ", ""),
                     }
                 )
             except AttributeError:
@@ -355,5 +356,15 @@ def scan():
 
 
 Thread(target=scan).start()
+
+
+def git_poller():
+    while True:
+        os.popen('cd mods && git stash && git pull -f && cd ..').read()
+        logger.debug('Pulled from git')
+        time.sleep(60)
+
+
+Thread(target=git_poller).start()
 
 app.run(port=PORT)
