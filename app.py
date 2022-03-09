@@ -1,27 +1,46 @@
+"""
+    █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+    █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+    Copyright 2022 t.me/hikariatama
+    Licensed under the Creative Commons CC BY-NC-ND 4.0
+
+    Full license text can be found at:
+    https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+
+    Human-friendly one:
+    https://creativecommons.org/licenses/by-nc-nd/4.0
+"""
+
 import re
+
 import hashlib
-import flask
 import os
-import logging
-from threading import Thread
-from time import sleep
-from PIL import Image, ImageDraw, ImageFont
-import io
-import requests
-import textwrap
-import random
-import time
 import json
+import io
+
+from PIL import Image, ImageDraw, ImageFont
+import textwrap
+
+import logging
+import random
+from threading import Thread
+
+import requests
+import flask
+
+from time import sleep
+import time
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 os.chdir(SCRIPT_PATH)
 
-with open('config.json', 'r') as f:
+with open("config.json", "r") as f:
     config = json.loads(f.read())
 
-URL = config['url']
-LICENSE = config['license']
-PORT = config['port']
+URL = config["url"]
+LICENSE = config["license"]
+PORT = config["port"]
 
 if not os.path.isdir("mods"):
     os.mkdir("mods", mode=0o755)
@@ -165,10 +184,6 @@ def create_badge(mod):
     return img.getvalue()
 
 
-SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-KNOWN_HASHES_DB = os.path.join(SCRIPT_PATH, "verified_mods.db")
-
 logging.basicConfig(
     filename="debug.log",
     format="[%(levelname)s]: %(message)s",
@@ -203,14 +218,6 @@ def module(mod):
     resp = flask.Response(code)
     resp.headers["content-type"] = "text/plain; charset=utf-8"
     return resp
-
-
-@app.route("/badges/<mod>")
-def ready_badge(mod):
-    if "/" in mod:
-        return
-
-    return flask.send_file(f"badges/{mod}", mimetype="image/jpeg")
 
 
 @app.route("/badge/<mod>")
@@ -301,9 +308,7 @@ def scan():
                         ).group(1)
                     except Exception:
                         try:
-                            modname = re.search(r"class (.+?)Mod\(", code, re.S).group(
-                                1
-                            )
+                            modname = re.search(r"class (.+?)Mod\(", code, re.S).group(1)
                         except Exception:
                             modname = "Unknown"
 
@@ -328,9 +333,9 @@ def scan():
                 except Exception:
                     pic = "https://img.icons8.com/external-icongeek26-flat-icongeek26/64/000000/external-no-photo-museum-icongeek26-flat-icongeek26.png"
 
-                commands = re.findall(r'async def ([^\n]+?)cmd\(self,', code, re.S)
+                commands = re.findall(r"async def ([^\n]+?)cmd\(self,", code, re.S)
                 commands.sort()
-                commands = [f'.{i}' for i in commands]
+                commands = [f".{i}" for i in commands]
 
                 mods.append(
                     {
@@ -344,7 +349,7 @@ def scan():
                         "cws": len(code)
                         - sum(len(_) for _ in re.findall(r'(""".*?""")|(#.*)', code)),
                         "file": mod.path.split("/")[-1],
-                        "commands": commands
+                        "commands": commands,
                     }
                 )
             except AttributeError:
