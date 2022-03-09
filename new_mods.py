@@ -11,13 +11,17 @@ import requests
 import textwrap
 import random
 import time
-
-URL = "mods.hikariatama.ru"
-LICENSE = "CC BY-NC-ND 4.0"
-PORT = 1119
+import json
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 os.chdir(SCRIPT_PATH)
+
+with open('config.json', 'r') as f:
+    config = json.loads(f.read())
+
+URL = config['url']
+LICENSE = config['license']
+PORT = config['port']
 
 if not os.path.isdir("mods"):
     os.mkdir("mods", mode=0o755)
