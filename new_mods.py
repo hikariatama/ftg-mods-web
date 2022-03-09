@@ -16,14 +16,14 @@ URL = "mods.hikariatama.ru"
 LICENSE = "CC BY-NC-ND 4.0"
 PORT = 1119
 
-logging.basicConfig(
-    filename="debug-mods.log",
-    format="[%(levelname)s]: %(message)s",
-    level=logging.INFO,
-)
-
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 os.chdir(SCRIPT_PATH)
+
+if not os.path.isdir("mods"):
+    os.mkdir("mods", mode=0o755)
+
+if not os.path.isdir("badges"):
+    os.mkdir("badges", mode=0o755)
 
 logger = logging.getLogger("root")
 logger.addHandler(logging.StreamHandler())
@@ -36,7 +36,8 @@ TRACK_FS = 48
 ARTIST_FS = 32
 MINITEXT = 24
 
-font = open("font.ttf", "rb").read()
+with open("font.ttf", "rb") as f:
+    font = f.read()
 
 font_smaller = ImageFont.truetype(io.BytesIO(font), ARTIST_FS, encoding="UTF-8")
 
@@ -66,7 +67,8 @@ def update_badges():
 
         for i, mod in enumerate(mods):
             badge = create_badge(mod)
-            open(f'badges/{mod["file"].split(".")[0]}.jpg', "wb").write(badge)
+            with open(f'badges/{mod["file"].split(".")[0]}.jpg', "wb") as f:
+                f.write(badge)
             logger.debug(f"Processed {i + 1}/{len(mods)}")
 
         logger.debug("Badges reloaded")
@@ -95,7 +97,6 @@ def create_badge(mod):
     thumb_size = 128
 
     thumb = thumb.resize((thumb_size, thumb_size))
-    # thumb = add_corners(thumb, 10)
 
     lines = textwrap.wrap(mod["desc"], width=40)
 
@@ -156,6 +157,7 @@ def create_badge(mod):
 
     img = io.BytesIO()
     im.save(img, format="PNG")
+
     return img.getvalue()
 
 
@@ -165,7 +167,7 @@ KNOWN_HASHES_DB = os.path.join(SCRIPT_PATH, "verified_mods.db")
 
 logging.basicConfig(
     filename="debug.log",
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    format="[%(levelname)s]: %(message)s",
     level=logging.ERROR,
 )
 root = logging.getLogger()
@@ -182,16 +184,15 @@ def module(mod):
         return
 
     module = [_ for _ in mods if _["file"] == mod]
-    
+
     if not module:
         return "Not found", 404
 
     module = module[0]
 
     try:
-        code = open(
-            f'mods/{mod}', "r", encoding="utf-8"
-        ).read()
+        with open(f"mods/{mod}", "r", encoding="utf-8") as f:
+            code = f.read()
     except FileNotFoundError:
         return "Not found", 404
 
@@ -233,7 +234,7 @@ def full():
 
 @app.route("/minimal.txt")
 def minimal():
-    resp = flask.Response(mods[0]['file'])
+    resp = flask.Response(mods[0]["file"])
     resp.headers["content-type"] = "text/plain; charset=utf-8"
     return resp
 
@@ -249,23 +250,22 @@ def view(mod):
 
     module = module[0]
 
-    code = open(
-        f'mods/{mod}', "r", encoding="utf-8"
-    ).read()
+    with open(f"mods/{mod}", "r", encoding="utf-8") as f:
+        code = f.read()
 
     return flask.render_template(
         "view.html",
         mod_name=mod,
         mod_code=code,
         mod_icon=module["pic"],
-        mod_sha=module["sha"],
         mod_desc=module["desc"],
+        url=URL,
     )
 
 
 @app.route("/", methods=["GET"])
 def mods_router():
-    return flask.render_template("mods.html", mods=mods)
+    return flask.render_template("mods.html", mods=mods, url=URL)
 
 
 mods = []
@@ -280,26 +280,61 @@ def scan():
                 continue
 
             try:
-                code = open(mod.path, "r").read()
+                with open(mod.path, "r") as f:
+                    code = f.read()
+
                 sha1 = hashlib.sha1()
                 sha1.update(code.encode("utf-8"))
 
-                modinfo = re.search(
-                    r"#[ ]?<3 title: (.*?)\n#[ ]?<3 pic: (.*?)\n#[ ]?<3 desc: (.*?)\n",
-                    code,
-                    re.S,
-                )
+                try:
+                    modname = re.search(r"# ?meta title: (.*?)\n", code, re.S).group(1)
+                except Exception:
+                    try:
+                        modname = re.search(
+                            r'strings ?= ?{.*?[\'"]name[\'"]: ?[\'"](.+?)[\'"]',
+                            code,
+                            re.S,
+                        ).group(1)
+                    except Exception:
+                        try:
+                            modname = re.search(r"class (.+?)Mod\(", code, re.S).group(
+                                1
+                            )
+                        except Exception:
+                            modname = "Unknown"
+
+                try:
+                    description = re.search(
+                        r"# ?meta desc: ?(.*?)\n", code, re.S
+                    ).group(1)
+                except Exception:
+                    try:
+                        description = re.search(
+                            r'class .+?Mod\(.*?Module\):.*?\n[ \t]*[\'"]{1,3}(.+?)[\'"]{1,3}',
+                            code,
+                            re.S,
+                        ).group(1)
+                    except Exception:
+                        description = "No description"
+
+                try:
+                    pic = re.search(
+                        r"# ?meta pic: ?(https?://.*?)\n", code, re.S
+                    ).group(1)
+                except Exception:
+                    pic = "https://img.icons8.com/external-icongeek26-flat-icongeek26/64/000000/external-no-photo-museum-icongeek26-flat-icongeek26.png"
 
                 mods.append(
                     {
                         "sha": str(sha1.hexdigest()),
-                        "name": modinfo.group(1),
-                        "pic": modinfo.group(2),
-                        "desc": modinfo.group(3),
+                        "name": modname,
+                        "pic": pic,
+                        "desc": description,
                         "link": f"https://{URL}/{mod.path.split('/')[-1]}",
                         "lines": code.count("\n") + 1,
                         "chars": len(code),
-                        "cws": len(code) - sum(len(_) for _ in re.findall(r'(""".*?""")|(#.*)', code)),  # noqa
+                        "cws": len(code)
+                        - sum(len(_) for _ in re.findall(r'(""".*?""")|(#.*)', code)),
                         "file": mod.path.split("/")[-1],
                     }
                 )

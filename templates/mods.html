@@ -1,213 +1,325 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<link rel="icon" href="https://i.imgur.com/qP7Oc5B.jpeg" />
+    <meta charset="utf-8">
+    <link rel="icon" href="https://i.imgur.com/qP7Oc5B.jpeg" />
 
-	<meta name="title" content="hikari. mods">
-	<meta name="description" content="Best GeekTG\FTG modules ever">
+    <meta name="title" content="hikari. mods">
+    <meta name="description" content="Best GeekTG\FTG modules ever">
 
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website">
-	<meta property="og:url" content="https://mods.hikariatama.ru/">
-	<meta property="og:title" content="hikari. mods">
-	<meta property="og:description" content="Best GeekTG\FTG modules ever">
-	<meta property="og:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mods.hikariatama.ru/">
+    <meta property="og:title" content="hikari. mods">
+    <meta property="og:description" content="Best GeekTG\FTG modules ever">
+    <meta property="og:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
 
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image">
-	<meta property="twitter:url" content="https://mods.hikariatama.ru/">
-	<meta property="twitter:title" content="hikari. mods">
-	<meta property="twitter:description" content="Best GeekTG\FTG modules ever">
-	<meta property="twitter:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://mods.hikariatama.ru/">
+    <meta property="twitter:title" content="hikari. mods">
+    <meta property="twitter:description" content="Best GeekTG\FTG modules ever">
+    <meta property="twitter:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
 
 
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>hikari. modules</title>
-	<style type="text/css">
-		@import url('https://fonts.googleapis.com/css2?family=Consolas&display=swap');
-		@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans');
-		* {
-			box-sizing: border-box;
-		}
-		body {
-			width: 100%;
-			height: 100%;
-			margin: 0;
-			padding: 0;
-			background: #303841;
-			font-family: Consolas,Monaco,'Andale Mono',monospace;
-			font-size: 16px;
-			padding: 50px;
-		}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>hikari. modules</title>
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css2?family=Consolas&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans');
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #303841;
+            font-family: Consolas,Monaco,'Andale Mono',monospace;
+            font-size: 16px;
+            padding: 50px 100px;
+        }
 
-		.mods {
-			text-align: center;
-		}
+        .mods {
+            text-align: center;
+        }
 
-		.mod {
-			border: 1px solid rgba(150, 150, 150, .1);
-			border-radius: 10px;
-			padding: 5px 10px;
-			display: inline-block;
-			animation: fadein .15s ease-out forwards;
-			opacity: 0;
-			margin: 5px 5px;
-			user-select: none;
-			cursor: pointer;
-			transition: all .3s ease;
-			background: rgba(48, 56, 65, .8);
-			position: relative;
-		}
+        .mod {
+            border: 1px solid rgba(150, 150, 150, .1);
+            border-radius: 10px;
+            padding: 5px 10px;
+            display: inline-block;
+            margin: 5px 5px;
+            user-select: none;
+            cursor: pointer;
+            transition: all .3s ease;
+            background: rgba(48, 56, 65, .8);
+            position: relative;
+            color: #ccc;
+        }
 
-		@keyframes fadein {
-			from {
-				opacity: 0;
-			}
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
 
-			to {
-				opacity: 1;
-			}
-		}
+            to {
+                opacity: 1;
+            }
+        }
 
-		@keyframes fadeout {
-			from {
-				opacity: 1;
-			}
+        @keyframes fadeout {
+            from {
+                opacity: 1;
+            }
 
-			to {
-				opacity: 0;
-			}
-		}
+            to {
+                opacity: 0;
+            }
+        }
 
-		.flex {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
+        .flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-		.title {
-			font-size: 16px;
-			color: #a9b7c6;
-			text-decoration: none;
-		}
+        .title {
+            font-size: 16px;
+            color: #a9b7c6;
+            text-decoration: none;
+        }
 
-		.icon {
-			height: 28px;
-			margin: 0 5px;
-			animation: fadein .15s ease-out forwards;
-			opacity: 0;
-		}
+        .icon {
+            height: 28px;
+            margin: 0 5px;
+            animation: fadein .15s ease-out forwards;
+            opacity: 0;
+        }
 
-		::-webkit-scrollbar{width:8px; background: #303841; height: 8px;}
-		::-webkit-scrollbar-track{background:#444b53;border-radius: 3px;}
-		::-webkit-scrollbar-button{display: none;}
-		::-webkit-scrollbar-corner{background: #303841}
-		::-webkit-scrollbar-thumb{background:#696f75;border-radius: 3px;}
+        ::-webkit-scrollbar{width:8px; background: #303841; height: 8px;}
+        ::-webkit-scrollbar-track{background:#444b53;border-radius: 3px;}
+        ::-webkit-scrollbar-button{display: none;}
+        ::-webkit-scrollbar-corner{background: #303841}
+        ::-webkit-scrollbar-thumb{background:#696f75;border-radius: 3px;}
 
-		@media screen and (max-width: 736px) {
-			body {
-				padding: 20px;
-			}
+        @media screen and (max-width: 736px) {
+            body {
+                padding: 20px;
+            }
 
-			.title {
-				font-size: 14px;
-			}
+            .title {
+                font-size: 14px;
+            }
 
-			.icon {
-				height: 24px;
-			}
-		}
+            .icon {
+                height: 24px;
+            }
+        }
 
-		.hidden:before {
-			z-index: 100;
-			content: '';
-			display: block;
-			width: 100%;
-			height: 30px;
-			position: absolute;
-			background: rgba(0, 0, 0, .4);
-			padding: 100px;
-			margin-top: -50px;
-			margin-left: -50px;
-			/*animation: fadeout .15s ease-out forwards;*/
-		}
+        .hidden:before {
+            z-index: 100;
+            content: '';
+            display: block;
+            width: 100%;
+            height: 30px;
+            position: absolute;
+            background: rgba(0, 0, 0, .4);
+            padding: 100px;
+            margin-top: -50px;
+            margin-left: -50px;
+            /*animation: fadeout .15s ease-out forwards;*/
+        }
 
-		.hidden {
-			overflow: hidden;
-		}
+        .hidden {
+            overflow: hidden;
+        }
 
-		.selected {
-			border: 2px solid #efefef;
-		}
+        .selected {
+            border: 2px solid #efefef;
+        }
 
-		.search {
-			width: 100%;
-			height: 100%;
-			border: none;
-			margin: 0;
-			padding: 0;
-			position: fixed;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			font-size: 64px;
-			opacity: .3;
-			text-transform: uppercase;
-			background: transparent;
-			text-align: center;
-			color: #fff;
-			font-family: 'Josefin Sans';
-		}
-	</style>
+        .search {
+            width: 100%;
+            height: 100%;
+            border: none;
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            font-size: 64px;
+            opacity: .3;
+            text-transform: uppercase;
+            background: transparent;
+            text-align: center;
+            color: #fff;
+            font-family: 'Josefin Sans';
+            cursor: default;
+        }
+
+        .mod:before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            position: absolute;
+            margin-left: -10px;
+            margin-top: -10px;
+            padding-right: 10px;
+            padding-bottom: 10px;
+        }
+
+        .invisible {
+            animation: fadeout .15s ease-out forwards;
+        }
+
+        .mod_window {
+            /*min-height: 150px;*/
+            /*padding: 10px;*/
+            width: 300px;
+            border: 1px solid rgba(150, 150, 150, .1);
+            background: rgba(40, 48, 57, 1);
+            left: 0;
+            top: 0;
+            position: absolute;
+            border-radius: 15px;
+            display: none;
+            transition: margin .3s ease;
+            z-index: 100;
+        }
+
+        .mod_description {
+            color: #ccc;
+            padding: 10px;
+            text-align: center;
+            font-family: Consolas;
+            user-select: none;
+            font-size: 15px;
+        }
+
+        .inline {
+            user-select: none;
+            cursor: pointer;
+            border: 1px solid rgba(150, 150, 150, .1);
+            border-radius: 15px;
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 0 0 15px 0;
+            color: #fff;
+            transition: all .2s ease;
+        }
+
+        .inline:hover {
+            border: 1px solid rgba(120, 120, 120, .1);
+            background: rgba(0, 0, 0, .1);
+        }
+    </style>
 </head>
 <body>
-	<input type="text" class="search" onkeyup="search()">
-	<div class="mods">
+    <input type="text" class="search" onkeyup="search()">
+    <div class="mods">
 
-	</div>
+        <span>
+            
+        </span>
 
-	<script type="text/javascript">
-		const delay = .05;
-		var mods = {{mods|tojson}};
-		for(var i = 0; i < mods.length; i++) {
-			var mod = mods[i];
-			let file = mod['link'].split('/');
-			file = file[file.length - 1];
-			let random = (Math.random() * (-.4) + .7).toFixed(3);
-			let random_2 = (Math.random() * (.8 - .9) + .3).toFixed(3);
-			document.querySelector('.mods').innerHTML += '<div class="mod" style="animation-delay: ' + random + 's;" name="' + mod['name'] + '"><div class="flex"><img class="icon" src="' + mod['pic'] + '" style="animation-delay: ' + random_2 + 's;"><a class="title" href="view/' + file + '" target="_blank">' + mod['name'] + '</a></div></div>';
-		}
+        <div class="mod_window">
+            <div class="mod_description"></div>
+            <div class="inline inline_install">📥 Install</div>
+            <div class="inline inline_open">👀 Show code</div>
+        </div>
+    </div>
 
-		var mod_e = document.querySelectorAll('.mod');
-		for(var i = 0; i < mod_e.length; i++) {
-			var mod = mod_e[i];
-			mod.onclick = (e) => {
-				e.currentTarget.querySelector('a').click();
-			}
-		}
-		setInterval(function() {
-			document.querySelector('input').focus();
-		}, 500);
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-		function search() {
-			let query = document.querySelector('input').value;
-			let mods = document.querySelectorAll('.mod');
-			for(var i = 0; i < mods.length; i++) {
-				let mod = mods[i];
-				mod.classList.remove('selected');
-				if(!mod.getAttribute('name').toLowerCase().includes(query.toLowerCase())) {
-					mod.classList.add('hidden');
-				} else {
-					mod.classList.remove('hidden');
-					if(query !== "") {
-						mod.classList.add('selected');
-					}
-				}
-			}
+    <script type="text/javascript">
+        const delay = .05;
+        var mods = {{mods|tojson}};
+        for(var i = 0; i < mods.length; i++) {
+            var mod = mods[i];
+            let file = mod['link'].split('/');
+            file = file[file.length - 1];
+            let random = (Math.random() * (-.4) + .7).toFixed(3);
+            document.querySelector('.mods span').innerHTML += '<div class="mod" id="m' + i.toString() + '" name="' + mod['name'] + '"><div class="flex"><img class="icon" src="' + mod['pic'] + '"<a class="title" href="view/' + file + '" target="_blank">' + mod['name'] + '</a></div></div>';
+            $("#m" + i.toString()).hide();
+        }
+        setTimeout(() => {
+            for(var i = 0; i < mods.length; i++) {
+                $("#m" + i.toString()).fadeIn(500);
+            }
+        }, 1000);
 
-		}
-	</script>
+        $(".mod_window").hide();
+
+        var mod_e = document.querySelectorAll('.mod');
+        for(var i = 0; i < mod_e.length; i++) {
+            var mod = mod_e[i];
+            mod.onmouseover = (e) => {
+                $(".mod_window").css({"margin-left": e.currentTarget.offsetLeft.toString() + "px", "margin-top": (e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 5).toString() + "px"});
+                $(".mod_window").fadeIn(50);
+                $(".mod_description").attr('id', e.currentTarget.id);
+                $(".mod_description").fadeOut(100, () => {
+                    let desc = mods[parseInt($(".mod_description").attr('id').substr(1))];
+                    $(".mod_description").text(desc['desc']);
+                    $(".mod_description").fadeIn(100);
+                });
+            }
+
+            mod.onmouseout = (e) => {
+                setTimeout(() => {
+                    if($(".mod_window").is(':hover') || document.querySelector('.mod:hover')) {
+                        return
+                    }              
+                    $(".mod_window").fadeOut(50);
+                }, 150);
+            }
+        }
+        document.querySelector('.mod_window').onmouseout = (e) => {
+            setTimeout(() => {
+                if($(".mod_window").is(':hover') || document.querySelector('.mod:hover')) {
+                    return
+                }              
+                $(".mod_window").fadeOut(50);
+            }, 150);
+        }
+        const hearts = ['❤️', '🧡', '💛', '💙', '💚', '💜', '🖤', '🤍'];
+        document.querySelector('.inline_install').onclick = (e) => {
+            navigator.clipboard.writeText(".dlmod https://{{ url }}/" + mods[parseInt($(".mod_description").attr('id').substr(1))]['file']);
+            e.currentTarget.innerHTML = hearts[Math.floor(Math.random() * hearts.length)] + ' Copied';
+            setTimeout(() => {
+                $(".inline_install").html("📥 Install");
+            }, 1000);
+        }
+
+        document.querySelector('.inline_open').onclick = (e) => {
+            window.open("https://{{ url }}/view/" + mods[parseInt($(".mod_description").attr('id').substr(1))]['file'], target="_blank");
+        }
+        setInterval(function() {
+            document.querySelector('input').focus();
+        }, 500);
+
+        function search() {
+            let query = document.querySelector('input').value;
+            let mods = document.querySelectorAll('.mod');
+            for(var i = 0; i < mods.length; i++) {
+                let mod = mods[i];
+                mod.classList.remove('selected');
+                if(!mod.getAttribute('name').toLowerCase().includes(query.toLowerCase())) {
+                    mod.classList.add('hidden');
+                } else {
+                    mod.classList.remove('hidden');
+                    if(query !== "") {
+                        mod.classList.add('selected');
+                    }
+                }
+            }
+
+        }
+    </script>
 </body>
 </html>

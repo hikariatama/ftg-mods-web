@@ -71,7 +71,7 @@
 	</style>
 </head>
 <body class="line-numbers">
-	<pre><div class="title">{{ mod_name }} {{ version }}</div> <div class="title install">📥 Install</div><br><code class="language-python">{{ mod_code }}</code></pre>
+	<pre><div class="title">{{ mod_name }}</div> <div class="title install">📥 Install</div><br><code class="language-python">{{ mod_code }}</code></pre>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/prism.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-python.min.js"></script>
@@ -85,7 +85,7 @@
 		}
 
 		document.querySelector('.install').onclick = (e) => {
-			navigator.clipboard.writeText(".dlmod https://mods.hikariatama.ru/{{ mod_name }}");
+			navigator.clipboard.writeText(".dlmod https://{{ url }}/{{ mod_name }}");
 			e.currentTarget.innerHTML = hearts[Math.floor(Math.random() * hearts.length)] + ' Link copied';
 		}
 	</script>
