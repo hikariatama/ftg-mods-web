@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="icon" href="https://i.imgur.com/qP7Oc5B.jpeg" />
+
+	<meta name="title" content="hikari. mods">
+	<meta name="description" content="Best GeekTG\FTG modules ever">
+
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://mods.hikariatama.ru/">
+	<meta property="og:title" content="hikari. mods">
+	<meta property="og:description" content="Best GeekTG\FTG modules ever">
+	<meta property="og:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:url" content="https://mods.hikariatama.ru/">
+	<meta property="twitter:title" content="hikari. mods">
+	<meta property="twitter:description" content="Best GeekTG\FTG modules ever">
+	<meta property="twitter:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>hikari. modules</title>
+	<style type="text/css">
+		@import url('https://fonts.googleapis.com/css2?family=Consolas&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans');
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: #303841;
+			font-family: Consolas,Monaco,'Andale Mono',monospace;
+			font-size: 16px;
+			padding: 50px;
+		}
+
+		.mods {
+			text-align: center;
+		}
+
+		.mod {
+			border: 1px solid rgba(150, 150, 150, .1);
+			border-radius: 10px;
+			padding: 5px 10px;
+			display: inline-block;
+			animation: fadein .15s ease-out forwards;
+			opacity: 0;
+			margin: 5px 5px;
+			user-select: none;
+			cursor: pointer;
+			transition: all .3s ease;
+			background: rgba(48, 56, 65, .8);
+			position: relative;
+		}
+
+		@keyframes fadein {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		}
+
+		@keyframes fadeout {
+			from {
+				opacity: 1;
+			}
+
+			to {
+				opacity: 0;
+			}
+		}
+
+		.flex {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.title {
+			font-size: 16px;
+			color: #a9b7c6;
+			text-decoration: none;
+		}
+
+		.icon {
+			height: 28px;
+			margin: 0 5px;
+			animation: fadein .15s ease-out forwards;
+			opacity: 0;
+		}
+
+		::-webkit-scrollbar{width:8px; background: #303841; height: 8px;}
+		::-webkit-scrollbar-track{background:#444b53;border-radius: 3px;}
+		::-webkit-scrollbar-button{display: none;}
+		::-webkit-scrollbar-corner{background: #303841}
+		::-webkit-scrollbar-thumb{background:#696f75;border-radius: 3px;}
+
+		@media screen and (max-width: 736px) {
+			body {
+				padding: 20px;
+			}
+
+			.title {
+				font-size: 14px;
+			}
+
+			.icon {
+				height: 24px;
+			}
+		}
+
+		.hidden:before {
+			z-index: 100;
+			content: '';
+			display: block;
+			width: 100%;
+			height: 30px;
+			position: absolute;
+			background: rgba(0, 0, 0, .4);
+			padding: 100px;
+			margin-top: -50px;
+			margin-left: -50px;
+			/*animation: fadeout .15s ease-out forwards;*/
+		}
+
+		.hidden {
+			overflow: hidden;
+		}
+
+		.selected {
+			border: 2px solid #efefef;
+		}
+
+		.search {
+			width: 100%;
+			height: 100%;
+			border: none;
+			margin: 0;
+			padding: 0;
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			font-size: 64px;
+			opacity: .3;
+			text-transform: uppercase;
+			background: transparent;
+			text-align: center;
+			color: #fff;
+			font-family: 'Josefin Sans';
+		}
+	</style>
+</head>
+<body>
+	<input type="text" class="search" onkeyup="search()">
+	<div class="mods">
+
+	</div>
+
+	<script type="text/javascript">
+		const delay = .05;
+		var mods = {{mods|tojson}};
+		for(var i = 0; i < mods.length; i++) {
+			var mod = mods[i];
+			let file = mod['link'].split('/');
+			file = file[file.length - 1];
+			let random = (Math.random() * (-.4) + .7).toFixed(3);
+			let random_2 = (Math.random() * (.8 - .9) + .3).toFixed(3);
+			document.querySelector('.mods').innerHTML += '<div class="mod" style="animation-delay: ' + random + 's;" name="' + mod['name'] + '"><div class="flex"><img class="icon" src="' + mod['pic'] + '" style="animation-delay: ' + random_2 + 's;"><a class="title" href="view/' + file + '" target="_blank">' + mod['name'] + '</a></div></div>';
+		}
+
+		var mod_e = document.querySelectorAll('.mod');
+		for(var i = 0; i < mod_e.length; i++) {
+			var mod = mod_e[i];
+			mod.onclick = (e) => {
+				e.currentTarget.querySelector('a').click();
+			}
+		}
+		setInterval(function() {
+			document.querySelector('input').focus();
+		}, 500);
+
+		function search() {
+			let query = document.querySelector('input').value;
+			let mods = document.querySelectorAll('.mod');
+			for(var i = 0; i < mods.length; i++) {
+				let mod = mods[i];
+				mod.classList.remove('selected');
+				if(!mod.getAttribute('name').toLowerCase().includes(query.toLowerCase())) {
+					mod.classList.add('hidden');
+				} else {
+					mod.classList.remove('hidden');
+					if(query !== "") {
+						mod.classList.add('selected');
+					}
+				}
+			}
+
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>hikari. mods - {{ mod_name }}</title>
+	<link rel="icon" href="{{ mod_icon }}" />
+
+	<meta name="title" content="hikari. mods - {{ mod_name }}">
+	<meta name="description" content="{{ mod_desc }}">
+
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://mods.hikariatama.ru/">
+	<meta property="og:title" content="hikari. mods - {{ mod_name }}">
+	<meta property="og:description" content="{{ mod_desc }}">
+	<meta property="og:image" content="{{ mod_icon }}">
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:url" content="https://mods.hikariatama.ru/">
+	<meta property="twitter:title" content="hikari. mods - {{ mod_name }}">
+	<meta property="twitter:description" content="{{ mod_desc }}">
+	<meta property="twitter:image" content="{{ mod_icon }}">
+
+
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-darcula.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/plugins/line-numbers/prism-line-numbers.min.css">
+
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		pre[class*=language-] {
+			margin: 0;
+			padding-bottom: 32px;
+			background: #303841;
+			line-height: 1.1;
+			width: 100vw;
+			height: 100vh;
+			box-sizing: border-box;
+		}
+
+		code[class*=language-] {
+			font-size: 13px;
+		}
+
+		.title {
+			border: 1px solid rgba(150, 150, 150, .1);
+			border-radius: 15px;
+			display: inline-block;
+			padding: 10px 15px;
+			margin: 0 0 15px 0;
+			user-select: none;
+			cursor: pointer;
+		}
+
+		::-webkit-scrollbar{width:8px; background: #303841; height: 0;}
+		::-webkit-scrollbar-track{background:#444b53;border-radius: 3px;}
+		::-webkit-scrollbar-button{display: none;}
+		::-webkit-scrollbar-corner{background: #303841}
+		::-webkit-scrollbar-thumb{background:#696f75;border-radius: 3px;}
+
+		.line-numbers .line-numbers-rows {
+			border-right: none!important;
+		}
+	</style>
+</head>
+<body class="line-numbers">
+	<pre><div class="title">{{ mod_name }} {{ version }}</div> <div class="title install">📥 Install</div><br><code class="language-python">{{ mod_code }}</code></pre>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-python.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+	<script type="text/javascript">
+		const hearts = ['❤️', '🧡', '💛', '💙', '💚', '💜', '🖤', '🤍'];
+		document.querySelector('.title').onclick = (e) => {
+			navigator.clipboard.writeText(document.querySelector('code').innerText);
+			e.currentTarget.innerHTML = hearts[Math.floor(Math.random() * hearts.length)] + ' Code copied';
+		}
+
+		document.querySelector('.install').onclick = (e) => {
+			navigator.clipboard.writeText(".dlmod https://mods.hikariatama.ru/{{ mod_name }}");
+			e.currentTarget.innerHTML = hearts[Math.floor(Math.random() * hearts.length)] + ' Link copied';
+		}
+	</script>
+</body>
+</html>
