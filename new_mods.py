@@ -324,6 +324,10 @@ def scan():
                 except Exception:
                     pic = "https://img.icons8.com/external-icongeek26-flat-icongeek26/64/000000/external-no-photo-museum-icongeek26-flat-icongeek26.png"
 
+                commands = re.findall(r'async def ([^\n]+?)cmd\(self,', code, re.S)
+                commands.sort()
+                commands = [f'.{i}' for i in commands]
+
                 mods.append(
                     {
                         "sha": str(sha1.hexdigest()),
@@ -336,6 +340,7 @@ def scan():
                         "cws": len(code)
                         - sum(len(_) for _ in re.findall(r'(""".*?""")|(#.*)', code)),
                         "file": mod.path.split("/")[-1],
+                        "commands": commands
                     }
                 )
             except AttributeError:

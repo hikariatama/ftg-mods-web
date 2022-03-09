@@ -38,7 +38,7 @@
             background: #303841;
             font-family: Consolas,Monaco,'Andale Mono',monospace;
             font-size: 16px;
-            padding: 50px 100px;
+            padding: 50px;
         }
 
         .mods {
@@ -218,6 +218,20 @@
             border: 1px solid rgba(120, 120, 120, .1);
             background: rgba(0, 0, 0, .1);
         }
+
+        .commands {
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        hr {
+            width: 80%;
+            outline: none;
+            border: none;
+            height: 1px;
+            background: #444;
+
+        }
     </style>
 </head>
 <body>
@@ -260,14 +274,23 @@
         for(var i = 0; i < mod_e.length; i++) {
             var mod = mod_e[i];
             mod.onmouseover = (e) => {
-                $(".mod_window").css({"margin-left": e.currentTarget.offsetLeft.toString() + "px", "margin-top": (e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 5).toString() + "px"});
                 $(".mod_window").fadeIn(50);
                 $(".mod_description").attr('id', e.currentTarget.id);
                 $(".mod_description").fadeOut(100, () => {
                     let desc = mods[parseInt($(".mod_description").attr('id').substr(1))];
-                    $(".mod_description").text(desc['desc']);
+                    let cmds = "";
+                    if(desc['commands'].length > 0) {
+                        cmds = '<br><hr>' + '<span class="commands">' + desc['commands'].join(' ') + '</span>';
+                    }
+                    $(".mod_description").html(desc['desc'] + cmds);
                     $(".mod_description").fadeIn(100);
                 });
+
+                let left = e.currentTarget.offsetLeft;
+                if(left + document.querySelector('.mod_window').offsetWidth > window.innerWidth) {
+                    left = window.innerWidth - document.querySelector('.mod_window').offsetWidth - 10
+                }
+                $(".mod_window").css({"margin-left": left.toString() + "px", "margin-top": (e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 5).toString() + "px"});
             }
 
             mod.onmouseout = (e) => {
