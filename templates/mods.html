@@ -270,6 +270,8 @@
         }, 1000);
 
         $(".mod_window").hide();
+        
+        const h = window.innerHeight;
 
         var mod_e = document.querySelectorAll('.mod');
         for(var i = 0; i < mod_e.length; i++) {
@@ -277,21 +279,23 @@
             mod.onmouseover = (e) => {
                 $(".mod_window").fadeIn(50);
                 $(".mod_description").attr('id', e.currentTarget.id);
-                $(".mod_description").fadeOut(100, () => {
-                    let desc = mods[parseInt($(".mod_description").attr('id').substr(1))];
-                    let cmds = "";
-                    if(desc['commands'].length > 0) {
-                        cmds = '<br><hr>' + '<span class="commands">' + desc['commands'].join(' ') + '</span>';
-                    }
-                    $(".mod_description").html(desc['desc'] + cmds);
-                    $(".mod_description").fadeIn(100);
-                });
+                let desc = mods[parseInt($(".mod_description").attr('id').substr(1))];
+                let cmds = "";
+                if(desc['commands'].length > 0) {
+                    cmds = '<br><hr>' + '<span class="commands">' + desc['commands'].join(' ') + '</span>';
+                }
+                $(".mod_description").html(desc['desc'] + cmds);
 
                 let left = e.currentTarget.offsetLeft;
                 if(left + document.querySelector('.mod_window').offsetWidth > window.innerWidth) {
-                    left = window.innerWidth - document.querySelector('.mod_window').offsetWidth - 10
+                    left = window.innerWidth - document.querySelector('.mod_window').offsetWidth - 10;
                 }
-                $(".mod_window").css({"margin-left": left.toString() + "px", "margin-top": (e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 5).toString() + "px"});
+                let top = e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 5;
+                if(top + document.querySelector('.mod_window').offsetHeight > h) {
+                    left += e.currentTarget.offsetWidth + 10;
+                    top = h - document.querySelector('.mod_window').offsetHeight - 10;
+                }
+                $(".mod_window").css({"margin-left": left.toString() + "px", "margin-top": top.toString() + "px"});
             }
 
             mod.onmouseout = (e) => {
