@@ -36,9 +36,6 @@ URL = config["url"]
 LICENSE = config["license"]
 PORT = config["port"]
 
-if not os.path.isdir("mods"):
-    os.mkdir("mods", mode=0o755)
-
 if not os.path.isdir("badges"):
     os.mkdir("badges", mode=0o755)
 
@@ -196,15 +193,12 @@ def module(mod):
     if "/" in mod:
         return
 
-    module = [_ for _ in mods if _["file"] == mod]
-
-    if not module:
-        return "Not found", 404
-
-    module = module[0]
-
     try:
-        with open(f"mods/{mod}", "r", encoding="utf-8") as f:
+        with open(
+            os.path.join(os.path.join(SCRIPT_PATH, config["mods_path"]), mod),
+            "r",
+            encoding="utf-8",
+        ) as f:
             code = f.read()
     except FileNotFoundError:
         return "Not found", 404
@@ -255,7 +249,11 @@ def view(mod):
 
     module = module[0]
 
-    with open(f"mods/{mod}", "r", encoding="utf-8") as f:
+    with open(
+        os.path.join(os.path.join(SCRIPT_PATH, config["mods_path"]), mod),
+        "r",
+        encoding="utf-8",
+    ) as f:
         code = f.read()
 
     return flask.render_template(
@@ -280,7 +278,7 @@ def scan():
     global mods
     while True:
         mods = []
-        for mod in os.scandir("mods"):
+        for mod in os.scandir(os.path.join(SCRIPT_PATH, config["mods_path"])):
             if not mod.path.endswith(".py"):
                 continue
 

@@ -1,6 +1,7 @@
 {
-	"port": 1119,
+	"port": 1113,
 	"url": "mods.hikariatama.ru",
 	"license": "CC BY-NC-ND 4.0",
-	"disable_git_pull": true
+	"disable_git_pull": true,
+	"mods_path": "../my_mods"
 }
