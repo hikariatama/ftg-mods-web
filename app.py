@@ -302,7 +302,9 @@ def scan():
                         ).group(1)
                     except Exception:
                         try:
-                            modname = re.search(r"class (.+?)Mod\(", code, re.S).group(1)
+                            modname = re.search(r"class (.+?)Mod\(", code, re.S).group(
+                                1
+                            )
                         except Exception:
                             modname = "Unknown"
 
@@ -357,14 +359,14 @@ def scan():
 
 Thread(target=scan).start()
 
+if "disable_git_pull" not in config or config["disable_git_pull"]:
 
-def git_poller():
-    while True:
-        os.popen('cd mods && git stash && git pull -f && cd ..').read()
-        logger.debug('Pulled from git')
-        time.sleep(60)
+    def git_poller():
+        while True:
+            os.popen("cd mods && git stash && git pull -f && cd ..").read()
+            logger.debug("Pulled from git")
+            time.sleep(60)
 
-
-Thread(target=git_poller).start()
+    Thread(target=git_poller).start()
 
 app.run(port=PORT)
