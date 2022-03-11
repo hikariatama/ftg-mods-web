@@ -190,9 +190,6 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 @app.route("/<mod>")
 def module(mod):
-    if "/" in mod:
-        return
-
     try:
         with open(
             os.path.join(os.path.join(SCRIPT_PATH, config["mods_path"]), mod),
@@ -210,18 +207,20 @@ def module(mod):
 
 @app.route("/badge/<mod>")
 def badge(mod):
-    if "/" in mod:
-        return
+    try:
+        return flask.jsonify(
+            {
+                "badge": f"https://{URL}/badges/{mod}.jpg",
+                "info": [_ for _ in mods if _["file"] == f"{mod}.py"][0],
+            }
+        )
+    except IndexError:
+        return "Not Found", 404
 
-    if all(_["file"] != f"{mod}.py" for _ in mods):
-        return "Not found", 404
 
-    return flask.jsonify(
-        {
-            "badge": f"https://{URL}/badges/{mod}.jpg",
-            "info": [_ for _ in mods if _["file"] == f"{mod}.py"][0],
-        }
-    )
+@app.route("/badges/<mod>")
+def ready_badge(mod):
+    return flask.send_file(f"badges/{mod}", mimetype="image/jpeg")
 
 
 @app.route("/full.txt")
@@ -348,7 +347,7 @@ def scan():
                     }
                 )
             except AttributeError:
-                pass
+                logger.warning(f"Can't load module {mod.path.split('/')[-1]}")
 
         mods.sort(key=lambda x: x["name"].lower())
 
