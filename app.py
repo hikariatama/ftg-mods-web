@@ -27,17 +27,16 @@ from time import sleep
 import time
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
-os.chdir(SCRIPT_PATH)
 
-with open("config.json", "r") as f:
+with open(os.path.join(SCRIPT_PATH, "config.json"), "r") as f:
     config = json.loads(f.read())
 
 URL = config["url"]
 LICENSE = config["license"]
 PORT = config["port"]
 
-if not os.path.isdir("badges"):
-    os.mkdir("badges", mode=0o755)
+if not os.path.isdir(os.path.join(SCRIPT_PATH, "badges")):
+    os.mkdir(os.path.join(SCRIPT_PATH, "badges"), mode=0o755)
 
 logger = logging.getLogger("root")
 logger.addHandler(logging.StreamHandler())
@@ -50,7 +49,7 @@ TRACK_FS = 48
 ARTIST_FS = 32
 MINITEXT = 24
 
-with open("font.ttf", "rb") as f:
+with open(os.path.join(SCRIPT_PATH, "font.ttf"), "rb") as f:
     font = f.read()
 
 font_smaller = ImageFont.truetype(io.BytesIO(font), ARTIST_FS, encoding="UTF-8")
@@ -81,7 +80,7 @@ def update_badges():
 
         for i, mod in enumerate(mods):
             badge = create_badge(mod)
-            with open(f'badges/{mod["file"].split(".")[0]}.jpg', "wb") as f:
+            with open(os.path.join(os.path.join(SCRIPT_PATH, 'badges'), f'{mod["file"].split(".")[0]}.jpg'), "wb") as f:
                 f.write(badge)
             logger.debug(f"Processed {i + 1}/{len(mods)}")
 
@@ -91,7 +90,7 @@ def update_badges():
 
 def download_mojies():
     global mojies_
-    for _ in os.scandir("pics"):
+    for _ in os.scandir(os.path.join(SCRIPT_PATH, "pics")):
         if _.path.endswith(".png"):
             mojies_ += [Image.open(_.path).convert("RGBA")]
 
@@ -237,6 +236,22 @@ def minimal():
     return resp
 
 
+@app.route("/mods.json", methods=["GET"])
+def mods_json_router():
+    global mods
+    l_mods = {}
+    for mod in mods.copy():
+        l_mod = mod.copy()
+        n = l_mod["name"]
+        del l_mod["name"]
+        l_mods[n] = l_mod
+
+    response = flask.jsonify(l_mods)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
+
+
 @app.route("/view/<mod>")
 def view(mod):
     if "/" in mod:
@@ -357,10 +372,9 @@ def scan():
 Thread(target=scan).start()
 
 if "disable_git_pull" not in config or config["disable_git_pull"]:
-
     def git_poller():
         while True:
-            os.popen("cd mods && git stash && git pull -f && cd ..").read()
+            os.popen(f"cd {os.path.join(SCRIPT_PATH, config['mods_path'])} && git stash && git pull -f && cd ..").read()
             logger.debug("Pulled from git")
             time.sleep(60)
 
