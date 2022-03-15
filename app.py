@@ -47,7 +47,7 @@ PADDING = (128, 0)
 
 TRACK_FS = 48
 ARTIST_FS = 32
-MINITEXT = 24
+MINITEXT = 18
 
 with open(os.path.join(SCRIPT_PATH, "font.ttf"), "rb") as f:
     font = f.read()
@@ -140,9 +140,21 @@ def create_badge(mod):
     im = Image.alpha_composite(im, Image.new("RGBA", SIZE, (0, 0, 0, 140)))
     draw = ImageDraw.Draw(im)
 
+    if mod['geektg_only']:
+        thickness = 5
+
+        rect_2 = ((rect[0][0] - thickness * 3, rect[0][1] - thickness * 3), (rect[1][0] + thickness * 3, rect[1][1] + thickness * 3))
+        draw.rounded_rectangle(rect_2, 15, fill=(34, 180, 29))
+
+        rect_2 = ((rect[0][0] - thickness * 2, rect[0][1] - thickness * 2), (rect[1][0] + thickness * 2, rect[1][1] + thickness * 2))
+        draw.rounded_rectangle(rect_2, 15, fill=(24, 103, 23))
+
+        rect_2 = ((rect[0][0] - thickness, rect[0][1] - thickness), (rect[1][0] + thickness, rect[1][1] + thickness))
+        draw.rounded_rectangle(rect_2, 15, fill=(19, 64, 18))
+
     draw.rounded_rectangle(rect, 15, fill=(10, 10, 10))
     draw.rounded_rectangle(
-        ((8, 8), (liliput.getsize(comm)[0] + 24, liliput.getsize(comm)[1] + 24)),
+        ((4, 4), (liliput.getsize(comm)[0] + 16, liliput.getsize(comm)[1] + 16)),
         5,
         fill=(10, 10, 10),
     )
@@ -161,7 +173,7 @@ def create_badge(mod):
     )
 
     draw.text(tpos, mod["name"], (255, 255, 255), font=font)
-    draw.text((16, 16), comm, (100, 100, 100), font=liliput)
+    draw.text((8, 8), comm, (100, 100, 100), font=liliput)
 
     offset = tpos[1] + TRACK_FS + 8
     for line in lines:
@@ -371,7 +383,7 @@ def scan():
 
 Thread(target=scan).start()
 
-if "disable_git_pull" not in config or config["disable_git_pull"]:
+if "disable_git_pull" not in config or not config["disable_git_pull"]:
     def git_poller():
         while True:
             os.popen(f"cd {os.path.join(SCRIPT_PATH, config['mods_path'])} && git stash && git pull -f && cd ..").read()
