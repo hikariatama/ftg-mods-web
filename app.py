@@ -156,26 +156,31 @@ def create_badge(mod):
     im = Image.alpha_composite(im, Image.new("RGBA", SIZE, (0, 0, 0, 140)))
     draw = ImageDraw.Draw(im)
 
+    thickness = 5
+
+    rect__1 = (
+        (rect[0][0] - thickness * 3, rect[0][1] - thickness * 3),
+        (rect[1][0] + thickness * 3, rect[1][1] + thickness * 3),
+    )
+
+    rect__2 = (
+        (rect[0][0] - thickness * 2, rect[0][1] - thickness * 2),
+        (rect[1][0] + thickness * 2, rect[1][1] + thickness * 2),
+    )
+
+    rect__3 = (
+        (rect[0][0] - thickness, rect[0][1] - thickness),
+        (rect[1][0] + thickness, rect[1][1] + thickness),
+    )
+
     if mod["hikka_only"]:
-        thickness = 5
-
-        rect_2 = (
-            (rect[0][0] - thickness * 3, rect[0][1] - thickness * 3),
-            (rect[1][0] + thickness * 3, rect[1][1] + thickness * 3),
-        )
-        draw.rounded_rectangle(rect_2, 15, fill="#913597")
-
-        rect_2 = (
-            (rect[0][0] - thickness * 2, rect[0][1] - thickness * 2),
-            (rect[1][0] + thickness * 2, rect[1][1] + thickness * 2),
-        )
-        draw.rounded_rectangle(rect_2, 15, fill="#712a76")
-
-        rect_2 = (
-            (rect[0][0] - thickness, rect[0][1] - thickness),
-            (rect[1][0] + thickness, rect[1][1] + thickness),
-        )
-        draw.rounded_rectangle(rect_2, 15, fill="#4a1d4d")
+        draw.rounded_rectangle(rect__1, 15, fill="#913597")
+        draw.rounded_rectangle(rect__2, 15, fill="#712a76")
+        draw.rounded_rectangle(rect__3, 15, fill="#4a1d4d")
+    elif mod["geektg_only"]:
+        draw.rounded_rectangle(rect__1, 15, fill=(34, 180, 29))
+        draw.rounded_rectangle(rect__2, 15, fill=(24, 103, 23))
+        draw.rounded_rectangle(rect__3, 15, fill=(19, 64, 18))
 
     draw.rounded_rectangle(rect, 15, fill=(10, 10, 10))
     draw.rounded_rectangle(
@@ -417,6 +422,7 @@ async def scan():
                         "file": mod.path.split("/")[-1],
                         "commands": commands,
                         "hikka_only": "#scope:hikka_only" in code.replace(" ", ""),
+                        "geektg_only": "#scope:geektg_only" in code.replace(" ", ""),
                     }
                 )
             except AttributeError:
