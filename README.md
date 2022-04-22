@@ -1,10 +1,12 @@
-# ftg-mods-web
-Cool-looking web interface for your ftg modules
-![image](https://user-images.githubusercontent.com/36935426/157499846-0952bde4-8157-41ca-bc52-0262d72d3ad2.png)
+# FTG Modules web
+Cool-looking web interface for your modules
 
+![image](https://user-images.githubusercontent.com/36935426/164723131-e7db978b-e1bc-4df2-9694-9ae6cfe96c1f.png)
+
+### Working demo: https://mods.hikariatama.ru
 # Setup
-1. Change 3 options in `config.json`
-2. Setup reverse proxy in needed
-3. Start flask in `app.py`
+1. Change options in `config.json`
+2. Setup reverse proxy if needed
+3. Start with `gunicorn -w 3 -k uvicorn.workers.UvicornWorker app:app --bind 0.0.0.0:1391` (change port if needed)
 
 You're good to go!
