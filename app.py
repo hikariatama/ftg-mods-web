@@ -6,6 +6,17 @@
     Licensed under the GNU GPLv3
 """
 
+
+from fastapi import (
+    FastAPI,
+    Request,
+    Response,
+)
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+
+
 import re
 
 import hashlib
@@ -18,18 +29,22 @@ import textwrap
 
 import logging
 import random
-from threading import Thread
 
 import requests
 import flask
 
-from time import sleep
-import time
+import asyncio
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(SCRIPT_PATH, "config.json"), "r") as f:
     config = json.loads(f.read())
+
+templates = Jinja2Templates(directory="templates")
+
+minimal_txt = """backuper
+cloud
+terminal"""
 
 URL = config["url"]
 LICENSE = config["license"]
@@ -74,32 +89,33 @@ def moji():
     return random.choice(mojies_)
 
 
-def update_badges():
+async def update_badges():
     while True:
         logger.debug("Reloading badges")
 
         for i, mod in enumerate(mods):
             badge = create_badge(mod)
-            with open(os.path.join(os.path.join(SCRIPT_PATH, 'badges'), f'{mod["file"].split(".")[0]}.jpg'), "wb") as f:
+            with open(
+                os.path.join(
+                    os.path.join(SCRIPT_PATH, "badges"),
+                    f'{mod["file"].split(".")[0]}.jpg',
+                ),
+                "wb",
+            ) as f:
                 f.write(badge)
             logger.debug(f"Processed {i + 1}/{len(mods)}")
 
         logger.debug("Badges reloaded")
-        time.sleep(120)
+        await asyncio.sleep(120)
 
 
-def download_mojies():
+async def download_mojies():
     global mojies_
     for _ in os.scandir(os.path.join(SCRIPT_PATH, "pics")):
         if _.path.endswith(".png"):
             mojies_ += [Image.open(_.path).convert("RGBA")]
 
-    logger.debug("Read emojies")
-
-    Thread(target=update_badges).start()
-
-
-Thread(target=download_mojies).start()
+    await update_badges()
 
 
 def create_badge(mod):
@@ -140,17 +156,26 @@ def create_badge(mod):
     im = Image.alpha_composite(im, Image.new("RGBA", SIZE, (0, 0, 0, 140)))
     draw = ImageDraw.Draw(im)
 
-    if mod['geektg_only']:
+    if mod["hikka_only"]:
         thickness = 5
 
-        rect_2 = ((rect[0][0] - thickness * 3, rect[0][1] - thickness * 3), (rect[1][0] + thickness * 3, rect[1][1] + thickness * 3))
-        draw.rounded_rectangle(rect_2, 15, fill=(34, 180, 29))
+        rect_2 = (
+            (rect[0][0] - thickness * 3, rect[0][1] - thickness * 3),
+            (rect[1][0] + thickness * 3, rect[1][1] + thickness * 3),
+        )
+        draw.rounded_rectangle(rect_2, 15, fill="#913597")
 
-        rect_2 = ((rect[0][0] - thickness * 2, rect[0][1] - thickness * 2), (rect[1][0] + thickness * 2, rect[1][1] + thickness * 2))
-        draw.rounded_rectangle(rect_2, 15, fill=(24, 103, 23))
+        rect_2 = (
+            (rect[0][0] - thickness * 2, rect[0][1] - thickness * 2),
+            (rect[1][0] + thickness * 2, rect[1][1] + thickness * 2),
+        )
+        draw.rounded_rectangle(rect_2, 15, fill="#712a76")
 
-        rect_2 = ((rect[0][0] - thickness, rect[0][1] - thickness), (rect[1][0] + thickness, rect[1][1] + thickness))
-        draw.rounded_rectangle(rect_2, 15, fill=(19, 64, 18))
+        rect_2 = (
+            (rect[0][0] - thickness, rect[0][1] - thickness),
+            (rect[1][0] + thickness, rect[1][1] + thickness),
+        )
+        draw.rounded_rectangle(rect_2, 15, fill="#4a1d4d")
 
     draw.rounded_rectangle(rect, 15, fill=(10, 10, 10))
     draw.rounded_rectangle(
@@ -194,62 +219,63 @@ logging.basicConfig(
 root = logging.getLogger()
 root.addHandler(flask.logging.default_handler)
 
-app = flask.Flask(__name__, static_folder=os.path.join(SCRIPT_PATH, "static"))
-app.logger.setLevel(logging.ERROR)
-app.config["TEMPLATES_AUTO_RELOAD"] = True
+app = FastAPI(docs_url="/docs")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-@app.route("/<mod>")
-def module(mod):
+@app.get("/badge/{mod}")
+async def get_badge_url_of_selected_mod(
+    request: Request,
+    mod: str,
+):
     try:
-        with open(
-            os.path.join(os.path.join(SCRIPT_PATH, config["mods_path"]), mod),
-            "r",
-            encoding="utf-8",
-        ) as f:
-            code = f.read()
-    except FileNotFoundError:
-        return "Not found", 404
-
-    resp = flask.Response(code)
-    resp.headers["content-type"] = "text/plain; charset=utf-8"
-    return resp
-
-
-@app.route("/badge/<mod>")
-def badge(mod):
-    try:
-        return flask.jsonify(
-            {
+        return JSONResponse(
+            status_code=200,
+            content={
                 "badge": f"https://{URL}/badges/{mod}.jpg",
                 "info": [_ for _ in mods if _["file"] == f"{mod}.py"][0],
-            }
+            },
         )
     except IndexError:
-        return "Not Found", 404
+        return Response(content="Not found", status_code=404)
 
 
-@app.route("/badges/<mod>")
-def ready_badge(mod):
-    return flask.send_file(f"badges/{mod}", mimetype="image/jpeg")
+@app.get("/badges/{mod}")
+async def get_badge_file_of_selected_mod(
+    request: Request,
+    mod: str,
+):
+    if not os.path.isfile(f"badges/{mod}"):
+        return Response(content="Not found", status_code=404)
+
+    return FileResponse(f"badges/{mod}", media_type="image/jpeg")
 
 
-@app.route("/full.txt")
-def full():
-    resp = flask.Response("\n".join([_["file"].split(".")[0] for _ in mods]))
-    resp.headers["content-type"] = "text/plain; charset=utf-8"
-    return resp
+@app.get("/full.txt")
+async def get_all_mods_for_ftg_dlmod(request: Request):
+    return Response(
+        content="\n".join([_["file"].split(".")[0] for _ in mods]),
+        media_type="text/plain; charset=utf-8",
+    )
 
 
-@app.route("/minimal.txt")
-def minimal():
-    resp = flask.Response(mods[0]["file"])
-    resp.headers["content-type"] = "text/plain; charset=utf-8"
-    return resp
+@app.get("/minimal.txt")
+async def get_minimal_mods_for_ftg_dlmod(request: Request):
+    return Response(
+        content=minimal_txt or mods[0]["file"].split(".")[0],
+        media_type="text/plain; charset=utf-8",
+    )
 
 
-@app.route("/mods.json", methods=["GET"])
-def mods_json_router():
+@app.get("/mods.json")
+async def get_mods_in_json_format(request: Request):
     global mods
     l_mods = {}
     for mod in mods.copy():
@@ -258,17 +284,32 @@ def mods_json_router():
         del l_mod["name"]
         l_mods[n] = l_mod
 
-    response = flask.jsonify(l_mods)
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    return JSONResponse(
+        status_code=200,
+        content=l_mods,
+    )
 
-    return response
+
+@app.get("/{mod}")
+async def get_one_particular_mod(
+    request: Request,
+    mod: str,
+):
+    try:
+        with open(
+            os.path.join(os.path.join(SCRIPT_PATH, config["mods_path"]), mod),
+            "r",
+            encoding="utf-8",
+        ) as f:
+            code = f.read()
+    except FileNotFoundError:
+        return Response(content="Not found", status_code=404)
+
+    return Response(content=code, media_type="text/plain; charset=utf-8")
 
 
-@app.route("/view/<mod>")
-def view(mod):
-    if "/" in mod:
-        return
-
+@app.get("/view/{mod}")
+async def get_web_view_of_mod(request: Request, mod: str):
     module = [_ for _ in mods if _["file"] == mod]
     if not module:
         return "Not found", 404
@@ -282,25 +323,30 @@ def view(mod):
     ) as f:
         code = f.read()
 
-    return flask.render_template(
+    return templates.TemplateResponse(
         "view.html",
-        mod_name=mod,
-        mod_code=code,
-        mod_icon=module["pic"],
-        mod_desc=module["desc"],
-        url=URL,
+        {
+            "request": request,
+            "mod_name": mod,
+            "mod_code": code,
+            "mod_icon": module["pic"],
+            "mod_desc": module["desc"],
+            "url": URL,
+        },
     )
 
 
-@app.route("/", methods=["GET"])
-def mods_router():
-    return flask.render_template("mods.html", mods=mods, url=URL)
+@app.get("/")
+async def main_page(request: Request):
+    return templates.TemplateResponse(
+        "mods.html", {"request": request, "mods": mods, "url": URL}
+    )
 
 
 mods = []
 
 
-def scan():
+async def scan():
     global mods
     while True:
         mods = []
@@ -370,7 +416,7 @@ def scan():
                         - sum(len(_) for _ in re.findall(r'(""".*?""")|(#.*)', code)),
                         "file": mod.path.split("/")[-1],
                         "commands": commands,
-                        "geektg_only": "#scope:geektg_only" in code.replace(" ", ""),
+                        "hikka_only": "#scope:hikka_only" in code.replace(" ", ""),
                     }
                 )
             except AttributeError:
@@ -378,18 +424,33 @@ def scan():
 
         mods.sort(key=lambda x: x["name"].lower())
 
-        sleep(10)
+        await asyncio.sleep(10)
 
 
-Thread(target=scan).start()
-
-if "disable_git_pull" not in config or not config["disable_git_pull"]:
-    def git_poller():
+async def git_poller():
+    if "disable_git_pull" not in config or not config["disable_git_pull"]:
         while True:
-            os.popen(f"cd {os.path.join(SCRIPT_PATH, config['mods_path'])} && git stash && git pull -f && cd ..").read()
+            os.popen(
+                f"cd {os.path.join(SCRIPT_PATH, config['mods_path'])} && git stash && git pull -f && cd .."
+            ).read()
             logger.debug("Pulled from git")
-            time.sleep(60)
+            await asyncio.sleep(60)
 
-    Thread(target=git_poller).start()
 
-app.run(port=PORT)
+@app.on_event("shutdown")
+def shutdown_event():
+    for task in tasks:
+        task.cancel()
+
+
+tasks = []
+
+
+@app.on_event("startup")
+async def startup_event():
+    global tasks
+    tasks = [
+        asyncio.ensure_future(download_mojies()),
+        asyncio.ensure_future(git_poller()),
+        asyncio.ensure_future(scan()),
+    ]

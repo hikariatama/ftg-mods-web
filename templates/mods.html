@@ -5,20 +5,20 @@
     <link rel="icon" href="https://i.imgur.com/qP7Oc5B.jpeg" />
 
     <meta name="title" content="hikari. mods">
-    <meta name="description" content="Best GeekTG\FTG modules ever">
+    <meta name="description" content="Best Hikka modules">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mods.hikariatama.ru/">
     <meta property="og:title" content="hikari. mods">
-    <meta property="og:description" content="Best GeekTG\FTG modules ever">
+    <meta property="og:description" content="Best Hikka modules">
     <meta property="og:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://mods.hikariatama.ru/">
     <meta property="twitter:title" content="hikari. mods">
-    <meta property="twitter:description" content="Best GeekTG\FTG modules ever">
+    <meta property="twitter:description" content="Best Hikka modules">
     <meta property="twitter:image" content="https://i.imgur.com/qP7Oc5B.jpeg">
 
 
@@ -234,8 +234,8 @@
 
         }
 
-        .geektg_only {
-            background: linear-gradient(45deg, #3d9519 0%, #337918 100%);
+        .hikka_only {
+            background: linear-gradient(45deg, #6c156a 0%, #661879 100%);
         }
     </style>
 </head>
@@ -264,7 +264,7 @@
             let file = mod['link'].split('/');
             file = file[file.length - 1];
             let random = (Math.random() * (-.4) + .7).toFixed(3);
-            let class_ = mod['geektg_only'] ? "geektg_only" : ""
+            let class_ = mod['hikka_only'] ? "hikka_only" : ""
             // console.log(class_);
             document.querySelector('.mods span').innerHTML += '<div class="mod ' + class_ + '" id="m' + i.toString() + '" name="' + mod['name'] + '"><div class="flex"><img class="icon" src="' + mod['pic'] + '"<a class="title" href="view/' + file + '" target="_blank">' + mod['name'] + '</a></div></div>';
             $("#m" + i.toString()).hide();
